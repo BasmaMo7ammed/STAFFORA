@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
@@ -9,6 +8,7 @@ import '../provider/employee_provider.dart';
 import '../theme/app_colors.dart';
 
 import 'components/employee_form_dialog.dart';
+import 'login_screen.dart';
 
 import '../wedgit/employee_empty_list.dart';
 import '../wedgit/employee_empty_grid.dart';
@@ -183,14 +183,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   const Divider(color: AppColors.border),
 
-                  _detailRow(
-                    'Employee ID',
-                    employee.employeeId,
-                  ),
-                  _detailRow(
-                    'Department',
-                    employee.department,
-                  ),
+                  _detailRow('Employee ID', employee.employeeId),
+                  _detailRow('Department', employee.department),
                   _detailRow(
                     'Salary',
                     NumberFormat.currency(
@@ -816,11 +810,29 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (confirmed != true || !mounted) return;
 
-    context
-        .read<EmployeeProvider>()
-        .clearEmployees();
+    try {
+      await context.read<AuthProvider>().logout();
 
-    await context.read<AuthProvider>().logout();
+      if (!mounted) return;
+
+      context.read<EmployeeProvider>().clearEmployees();
+
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+          builder: (_) => const LoginScreen(),
+        ),
+        (route) => false,
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Logout failed: $e'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    }
   }
 
   // Build

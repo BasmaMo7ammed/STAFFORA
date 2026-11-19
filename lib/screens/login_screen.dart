@@ -7,6 +7,7 @@ import '../utils/app_validators.dart';
 
 import 'signup_screen.dart';
 import 'forgot_password_screen.dart';
+import 'home_screen.dart';
 import 'components/custom_button.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -43,7 +44,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (!mounted) return;
 
-    if (!success) {
+    if (success) {
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+          builder: (_) => const HomeScreen(),
+        ),
+        (route) => false,
+      );
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -232,14 +240,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     const SizedBox(height: 10),
 
-                    // FORGOT PASSWORD BUTTON
+                    // FORGOT PASSWORD
                     Align(
                       alignment: Alignment.centerRight,
                       child: TextButton(
-                        onPressed: () {
-                          debugPrint('Button Pressed');
-                          _forgotPassword();
-                        },
+                        onPressed: _forgotPassword,
                         child: const Text(
                           'Forgot Password?',
                           style: TextStyle(

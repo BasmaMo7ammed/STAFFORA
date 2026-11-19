@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -36,8 +35,8 @@ class _SignupScreenState extends State<SignupScreen> {
     super.dispose();
   }
 
+  // SIGN UP
   Future<void> _signup() async {
-    // Prevent multiple submissions
     if (_isSubmitting) return;
 
     if (!_formKey.currentState!.validate()) return;
@@ -46,12 +45,10 @@ class _SignupScreenState extends State<SignupScreen> {
       _isSubmitting = true;
     });
 
-    debugPrint('SIGNUP SCREEN: Button pressed.');
+    debugPrint('SIGNUP: Started');
 
     try {
       final authProvider = context.read<AuthProvider>();
-
-      debugPrint('SIGNUP SCREEN: Calling AuthProvider...');
 
       final success = await authProvider.signUp(
         name: _nameController.text.trim(),
@@ -59,12 +56,12 @@ class _SignupScreenState extends State<SignupScreen> {
         password: _passwordController.text,
       );
 
-      debugPrint('SIGNUP SCREEN: Result = $success');
+      debugPrint('SIGNUP: Success = $success');
 
       if (!mounted) return;
 
       if (success) {
-        debugPrint('SIGNUP SCREEN: Navigating to HomeScreen.');
+        debugPrint('SIGNUP: Navigating to HomeScreen');
 
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(
@@ -76,21 +73,23 @@ class _SignupScreenState extends State<SignupScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              authProvider.errorMessage ?? 'Account creation failed.',
+              authProvider.errorMessage ??
+                  'Account creation failed.',
             ),
             backgroundColor: AppColors.error,
             behavior: SnackBarBehavior.floating,
           ),
         );
       }
-    } catch (error) {
-      debugPrint('SIGNUP SCREEN ERROR: $error');
+    } catch (error, stackTrace) {
+      debugPrint('SIGNUP ERROR: $error');
+      debugPrint('$stackTrace');
 
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text(
+        const SnackBar(
+          content: Text(
             'Something went wrong. Please try again.',
           ),
           backgroundColor: AppColors.error,
@@ -103,11 +102,12 @@ class _SignupScreenState extends State<SignupScreen> {
           _isSubmitting = false;
         });
 
-        debugPrint('SIGNUP SCREEN: Finished.');
+        debugPrint('SIGNUP: Finished');
       }
     }
   }
 
+  // INPUT DECORATION
   InputDecoration _decoration({
     required String label,
     required IconData icon,
@@ -177,26 +177,31 @@ class _SignupScreenState extends State<SignupScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
+
                     const SizedBox(height: 8),
+
                     const Text(
                       'Create your STAFFORA admin account.',
                       style: TextStyle(
                         color: AppColors.textSecondary,
                       ),
                     ),
+
                     const SizedBox(height: 30),
 
                     // FULL NAME
                     TextFormField(
                       controller: _nameController,
                       enabled: !isLoading,
-                      textCapitalization: TextCapitalization.words,
+                      textCapitalization:
+                          TextCapitalization.words,
                       validator: AppValidators.required,
                       decoration: _decoration(
                         label: 'Full Name',
                         icon: Icons.person_outline,
                       ),
                     ),
+
                     const SizedBox(height: 18),
 
                     // EMAIL
@@ -210,6 +215,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         icon: Icons.email_outlined,
                       ),
                     ),
+
                     const SizedBox(height: 18),
 
                     // PASSWORD
@@ -238,6 +244,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         ),
                       ),
                     ),
+
                     const SizedBox(height: 18),
 
                     // CONFIRM PASSWORD
@@ -276,15 +283,17 @@ class _SignupScreenState extends State<SignupScreen> {
                         ),
                       ),
                     ),
+
                     const SizedBox(height: 30),
 
-                    // CREATE ACCOUNT BUTTON
+                    // CREATE ACCOUNT
                     CustomButton(
                       text: 'Create Account',
                       icon: Icons.arrow_forward_rounded,
                       isLoading: isLoading,
                       onPressed: isLoading ? null : _signup,
                     ),
+
                     const SizedBox(height: 20),
 
                     // BACK TO LOGIN
